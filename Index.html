@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <style>
+    :root { --ink:#1f2937; --muted:#6b7280; --line:#d1d5db; --brand:#334466; --ok:#15803d; --err:#b91c1c; --bg:#f5f6f8; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.45 Arial, Helvetica, sans-serif; }
+    .wrap { max-width:960px; margin:0 auto; padding:24px 16px; display:grid; grid-template-columns: 1fr 320px; gap:20px; }
+    @media (max-width: 820px) { .wrap { grid-template-columns: 1fr; } }
+    h1 { grid-column:1/-1; margin:0; font-size:22px; color:var(--brand); }
+    .card { background:#fff; border:1px solid var(--line); border-radius:10px; padding:20px; }
+    .grid { display:grid; grid-template-columns:1fr 1fr; gap:14px 16px; }
+    @media (max-width: 520px) { .grid { grid-template-columns:1fr; } }
+    .full { grid-column:1/-1; }
+    label { display:block; font-weight:bold; font-size:13px; margin-bottom:4px; }
+    .hint { font-weight:normal; color:var(--muted); }
+    input[type=text], input[type=number], input[type=date], input[type=email] {
+      width:100%; padding:9px 10px; border:1px solid var(--line); border-radius:6px; font:inherit; }
+    input:focus { outline:2px solid #93a5c8; border-color:var(--brand); }
+    .seg { display:inline-flex; border:1px solid var(--line); border-radius:6px; overflow:hidden; margin-bottom:6px; }
+    .seg label { margin:0; padding:5px 12px; font-weight:normal; cursor:pointer; }
+    .seg input { display:none; }
+    .seg input:checked + span { color:#fff; }
+    .seg label:has(input:checked) { background:var(--brand); color:#fff; }
+    .money { position:relative; }
+    .money::before { content:"$"; position:absolute; left:10px; top:9px; color:var(--muted); }
+    .money input { padding-left:22px; }
+    .checks { display:flex; gap:24px; }
+    .checks label { display:flex; align-items:center; gap:8px; font-weight:normal; font-size:15px; }
+    .checks input { width:18px; height:18px; }
+    .actions { display:flex; gap:10px; margin-top:20px; }
+    button { font:inherit; padding:10px 22px; border-radius:6px; cursor:pointer; border:1px solid var(--brand); }
+    button.primary { background:var(--brand); color:#fff; }
+    button.secondary { background:#fff; color:var(--brand); }
+    button:disabled { opacity:.6; cursor:wait; }
+    .msg { margin-top:14px; padding:10px 12px; border-radius:6px; display:none; }
+    .msg.ok  { display:block; background:#ecfdf3; color:var(--ok); border:1px solid #bbf7d0; }
+    .msg.err { display:block; background:#fef2f2; color:var(--err); border:1px solid #fecaca; }
+    .est h2 { margin:0 0 12px; font-size:16px; color:var(--brand); }
+    .est dl { margin:0; display:grid; grid-template-columns:1fr auto; gap:8px 12px; }
+    .est dt { color:var(--muted); font-size:13px; }
+    .est dd { margin:0; text-align:right; font-weight:bold; font-variant-numeric:tabular-nums; }
+    .est hr { grid-column:1/-1; border:0; border-top:1px solid var(--line); margin:4px 0; width:100%; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Retail Sales Estimate</h1>
+
+  <form id="f" class="card" novalidate>
+    <div class="grid">
+      <div class="full">
+        <label for="clientName">Client name</label>
+        <input type="text" id="clientName" name="clientName" required>
+      </div>
+      <div>
+        <label for="locations">Number of locations</label>
+        <input type="number" id="locations" name="locations" min="1" step="1" required>
+      </div>
+      <div>
+        <label for="devicesPerLocation">Devices per location</label>
+        <input type="number" id="devicesPerLocation" name="devicesPerLocation" min="0" step="1" required>
+      </div>
+      <div>
+        <label for="ccFee">Credit card fee <span class="hint">(%)</span></label>
+        <input type="number" id="ccFee" name="ccFee" min="0" max="100" step="0.01" placeholder="e.g. 2.9" required>
+      </div>
+      <div>
+        <label for="salesVolume">Estimated sales volume</label>
+        <div class="seg" role="radiogroup" aria-label="Volume basis">
+          <label><input type="radio" name="volumeBasis" value="Annual" checked><span>Annual</span></label>
+          <label><input type="radio" name="volumeBasis" value="Monthly"><span>Monthly</span></label>
+        </div>
+        <div class="money"><input type="number" id="salesVolume" name="salesVolume" min="0" step="1" required></div>
+      </div>
+      <div>
+        <label for="launchDate">Estimated launch date</label>
+        <input type="date" id="launchDate" name="launchDate" required>
+      </div>
+      <div>
+        <label for="products">Estimated number of products</label>
+        <input type="number" id="products" name="products" min="0" step="1" required>
+      </div>
+      <div class="full">
+        <label>Business type</label>
+        <div class="checks">
+          <label><input type="checkbox" id="retail" name="retail"> Retail</label>
+          <label><input type="checkbox" id="fnb" name="fnb"> Food and Beverage</label>
+        </div>
+      </div>
+      <div class="full">
+        <label for="enteredBy">Entered by</label>
+        <input type="email" id="enteredBy" name="enteredBy" value="<?= userEmail ?>" <?= userEmail ? 'readonly' : '' ?> required>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button type="submit" class="primary" id="submitBtn">Submit</button>
+      <button type="button" class="secondary" id="resetBtn">Reset</button>
+    </div>
+    <div id="msg" class="msg" role="status"></div>
+  </form>
+
+  <aside class="card est" aria-live="polite">
+    <h2>Estimates</h2>
+    <dl>
+      <dt>Total devices</dt><dd id="o_totalDevices">-</dd>
+      <hr>
+      <dt>Annual sales</dt><dd id="o_annualSales">-</dd>
+      <dt>Monthly sales</dt><dd id="o_monthlySales">-</dd>
+      <hr>
+      <dt>Annual card fees</dt><dd id="o_annualFees">-</dd>
+      <dt>Monthly card fees</dt><dd id="o_monthlyFees">-</dd>
+      <hr>
+      <dt>Annual sales per location</dt><dd id="o_perLocation">-</dd>
+      <dt>Annual sales per device</dt><dd id="o_perDevice">-</dd>
+      <hr>
+      <dt>Days to launch</dt><dd id="o_daysToLaunch">-</dd>
+    </dl>
+  </aside>
+</div>
+
+<script>
+  const f = document.getElementById('f');
+  const msg = document.getElementById('msg');
+  const submitBtn = document.getElementById('submitBtn');
+  const enteredByDefault = document.getElementById('enteredBy').value;
+
+  const usd = new Intl.NumberFormat('en-US', { style:'currency', currency:'USD', maximumFractionDigits:0 });
+  const int = new Intl.NumberFormat('en-US', { maximumFractionDigits:0 });
+
+  function readForm() {
+    const v = id => document.getElementById(id).value;
+    return {
+      clientName: v('clientName').trim(),
+      locations: v('locations'),
+      devicesPerLocation: v('devicesPerLocation'),
+      ccFee: v('ccFee'),
+      volumeBasis: f.querySelector('input[name=volumeBasis]:checked').value,
+      salesVolume: v('salesVolume'),
+      launchDate: v('launchDate'),
+      products: v('products'),
+      retail: document.getElementById('retail').checked,
+      fnb: document.getElementById('fnb').checked,
+      enteredBy: v('enteredBy').trim()
+    };
+  }
+
+  // Same math as calcEstimates_ in Code.gs
+  function calc(form) {
+    const locations = Number(form.locations) || 0;
+    const dpl = Number(form.devicesPerLocation) || 0;
+    const vol = Number(form.salesVolume) || 0;
+    const fee = (Number(form.ccFee) || 0) / 100;
+    const totalDevices = locations * dpl;
+    const annualSales = form.volumeBasis === 'Monthly' ? vol * 12 : vol;
+    const annualFees = annualSales * fee;
+    let daysToLaunch = null;
+    if (form.launchDate) {
+      const [y, m, d] = form.launchDate.split('-').map(Number);
+      const today = new Date(); today.setHours(0,0,0,0);
+      daysToLaunch = Math.round((new Date(y, m - 1, d) - today) / 86400000);
+    }
+    return {
+      totalDevices, annualSales, monthlySales: annualSales / 12,
+      annualFees, monthlyFees: annualFees / 12,
+      perLocation: locations ? annualSales / locations : 0,
+      perDevice: totalDevices ? annualSales / totalDevices : 0,
+      daysToLaunch
+    };
+  }
+
+  function render() {
+    const r = calc(readForm());
+    const set = (id, txt) => document.getElementById('o_' + id).textContent = txt;
+    set('totalDevices', int.format(r.totalDevices));
+    ['annualSales','monthlySales','annualFees','monthlyFees','perLocation','perDevice']
+      .forEach(k => set(k, usd.format(r[k])));
+    set('daysToLaunch', r.daysToLaunch === null ? '-' : int.format(r.daysToLaunch));
+  }
+
+  function validate(form) {
+    const e = [];
+    if (!form.clientName) e.push('Client name is required.');
+    if (!(Number(form.locations) >= 1)) e.push('Number of locations must be at least 1.');
+    if (form.devicesPerLocation === '' || Number(form.devicesPerLocation) < 0) e.push('Enter devices per location.');
+    if (form.ccFee === '' || Number(form.ccFee) < 0 || Number(form.ccFee) >= 100) e.push('Enter a credit card fee between 0 and 100%.');
+    if (form.salesVolume === '' || Number(form.salesVolume) < 0) e.push('Enter estimated sales volume.');
+    if (!form.launchDate) e.push('Enter an estimated launch date.');
+    if (form.products === '' || Number(form.products) < 0) e.push('Enter estimated number of products.');
+    if (!form.retail && !form.fnb) e.push('Select Retail, Food and Beverage, or both.');
+    if (!form.enteredBy) e.push('Entered by is required.');
+    return e;
+  }
+
+  function showMsg(text, ok) { msg.textContent = text; msg.className = 'msg ' + (ok ? 'ok' : 'err'); }
+
+  f.addEventListener('input', render);
+  f.addEventListener('change', render);
+
+  f.addEventListener('submit', ev => {
+    ev.preventDefault();
+    const form = readForm();
+    const errors = validate(form);
+    if (errors.length) { showMsg(errors.join(' '), false); return; }
+    submitBtn.disabled = true; submitBtn.textContent = 'Saving...';
+    google.script.run
+      .withSuccessHandler(res => {
+        submitBtn.disabled = false; submitBtn.textContent = 'Submit';
+        showMsg(`Saved estimate for ${res.client} (sheet row ${res.row}).`, true);
+      })
+      .withFailureHandler(err => {
+        submitBtn.disabled = false; submitBtn.textContent = 'Submit';
+        showMsg('Could not save: ' + (err && err.message ? err.message : err), false);
+      })
+      .submitEstimate(form);
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    f.reset();
+    document.getElementById('enteredBy').value = enteredByDefault;
+    msg.className = 'msg'; msg.textContent = '';
+    render();
+  });
+
+  render();
+</script>
+</body>
+</html>
