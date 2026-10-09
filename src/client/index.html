@@ -24,7 +24,7 @@
 
         <div>
           <label class="label" for="locations">Number of locations</label>
-          <input class="input" type="number" id="locations" name="locations" min="1" step="1" inputmode="numeric" required>
+          <input class="input" type="number" id="locations" name="locations" min="1" step="1" inputmode="integer" required>
         </div>
         <div>
           <label class="label" for="devicesPerLocation">Devices per location</label>
@@ -41,9 +41,13 @@
         </div>
 
         <div>
-          <div class="mb-1 flex items-center justify-between gap-3">
-            <label class="label mb-0" for="salesVolume">Estimated sales volume</label>
-            <div class="inline-flex rounded-md border border-line p-0.5 text-sm" role="radiogroup" aria-label="Sales volume is">
+          <label class="label" for="salesVolume">Estimated sales volume</label>
+          <div class="flex gap-2">
+            <div class="relative min-w-0 flex-1">
+              <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-muted">$</span>
+              <input class="input pl-7 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none" type="number" id="salesVolume" name="salesVolume" min="0" step="1" inputmode="numeric" required>
+            </div>
+            <div class="inline-flex shrink-0 rounded-md border border-line bg-white p-0.5 text-sm" role="radiogroup" aria-label="Sales volume is">
               <label class="seg-option">
                 <input class="sr-only" type="radio" name="volumeBasis" value="Annual" checked>Annual
               </label>
@@ -51,10 +55,6 @@
                 <input class="sr-only" type="radio" name="volumeBasis" value="Monthly">Monthly
               </label>
             </div>
-          </div>
-          <div class="relative">
-            <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-muted">$</span>
-            <input class="input pl-7" type="number" id="salesVolume" name="salesVolume" min="0" step="1" inputmode="numeric" required>
           </div>
         </div>
         <div>
@@ -92,7 +92,7 @@
         <button type="submit" id="save" class="btn btn-primary">Save estimate</button>
         <button type="button" id="clear" class="btn btn-secondary">Clear form</button>
       </div>
-      <p id="status" class="mt-4 hidden rounded-md px-3 py-2 text-sm" role="status" aria-live="polite"></p>
+      <div id="status" class="mt-4 hidden rounded-md px-3 py-2 text-sm" role="status" aria-live="polite"></div>
     </form>
 
     <aside class="stub lg:sticky lg:top-6" aria-label="Estimates" aria-live="polite">

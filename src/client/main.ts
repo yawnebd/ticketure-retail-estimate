@@ -19,7 +19,7 @@ const $ = <T extends HTMLElement>(id: string) => {
 const form = $<HTMLFormElement>('estimate-form');
 const saveBtn = $<HTMLButtonElement>('save');
 const clearBtn = $<HTMLButtonElement>('clear');
-const statusEl = $<HTMLParagraphElement>('status');
+const statusEl = $<HTMLDivElement>('status');
 const existingBox = $<HTMLDivElement>('existing-client');
 const existingTitle = $<HTMLParagraphElement>('existing-client-title');
 const existingList = $<HTMLUListElement>('existing-client-list');
@@ -103,10 +103,24 @@ const TONE_CLASSES: Record<Tone, string[]> = {
   info: ['bg-stub', 'text-ink'],
 };
 
-function showStatus(text: string, tone: Tone): void {
+/** A list of messages is shown as bullets so validation errors don't run together. */
+function showStatus(text: string | string[], tone: Tone): void {
   statusEl.classList.remove(...Object.values(TONE_CLASSES).flat(), 'hidden');
   statusEl.classList.add(...TONE_CLASSES[tone]);
-  statusEl.textContent = text;
+  if (typeof text === 'string') {
+    statusEl.textContent = text;
+    return;
+  }
+  const ul = document.createElement('ul');
+  ul.className = 'list-disc space-y-0.5 pl-5';
+  ul.replaceChildren(
+    ...text.map((t) => {
+      const li = document.createElement('li');
+      li.textContent = t;
+      return li;
+    }),
+  );
+  statusEl.replaceChildren(ul);
 }
 
 function hideStatus(): void {
@@ -166,7 +180,7 @@ async function save(allowExistingClient = false): Promise<void> {
   const parsed = parseEstimate(input);
   if (!parsed.ok) {
     markInvalid();
-    showStatus(parsed.errors.join(' '), 'err');
+    showStatus(parsed.errors, 'err');
     return;
   }
   clearInvalid();
