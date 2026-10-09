@@ -1,0 +1,23 @@
+{
+  "name": "ticketure-retail-estimate",
+  "private": true,
+  "type": "module",
+  "description": "Apps Script web app that saves retail/F&B client estimates to the Ticketure Retail Estimates sheet.",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.server.json && tsc -p tsconfig.client.json && tsc -p tsconfig.scripts.json",
+    "build": "npm run typecheck && tsx scripts/build.ts",
+    "push": "npm run build && clasp push",
+    "deploy": "npm run push && clasp deploy --description \"$(git log -1 --pretty=%s)\"",
+    "test": "tsx --test test/*.test.ts"
+  },
+  "devDependencies": {
+    "@google/clasp": "^3.0.6",
+    "@tailwindcss/cli": "^4.1.0",
+    "@types/google-apps-script": "^1.0.97",
+    "@types/node": "^22.10.0",
+    "esbuild": "^0.25.0",
+    "tailwindcss": "^4.1.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}

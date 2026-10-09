@@ -1,0 +1,65 @@
+@import "tailwindcss";
+@source "./";
+
+@theme {
+  --font-sans: "Public Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --color-brand: #334466;
+  --color-brand-hover: #2a3854;
+  --color-ink: #1d2433;
+  --color-muted: #5f6878;
+  --color-line: #cfd5df;
+  --color-paper: #f2f3f0;
+  --color-stub: #e7ebf3;
+}
+
+@layer components {
+  .label {
+    @apply mb-1 block text-sm font-semibold;
+  }
+  .input {
+    @apply block w-full rounded-md border border-line bg-white px-3 py-2 text-ink placeholder:text-muted/60
+      focus:border-brand focus:outline-2 focus:outline-offset-0 focus:outline-brand/30;
+  }
+  .input[aria-invalid="true"] {
+    @apply border-red-600;
+  }
+  .seg-option {
+    @apply cursor-pointer rounded px-3 py-0.5 text-muted
+      has-checked:bg-brand has-checked:text-white
+      has-focus-visible:outline-2 has-focus-visible:outline-offset-1 has-focus-visible:outline-brand;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center rounded-md border border-brand px-5 py-2 font-semibold
+      focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand
+      disabled:cursor-wait disabled:opacity-60;
+  }
+  .btn-primary {
+    @apply bg-brand text-white enabled:hover:bg-brand-hover;
+  }
+  .btn-secondary {
+    @apply bg-white text-brand enabled:hover:bg-stub;
+  }
+
+  /* Estimates panel styled as a ticket stub: the "days to launch" strip tears off along a
+     perforation with a notch cut from each edge. --tear is the strip height. */
+  .stub {
+    --tear: 4.5rem;
+    --notch: 0.6rem;
+    @apply rounded-xl bg-stub;
+    -webkit-mask:
+      radial-gradient(circle var(--notch) at 0 calc(100% - var(--tear)), #0000 98%, #000) left / 51% 100% no-repeat,
+      radial-gradient(circle var(--notch) at 100% calc(100% - var(--tear)), #0000 98%, #000) right / 51% 100% no-repeat;
+    mask:
+      radial-gradient(circle var(--notch) at 0 calc(100% - var(--tear)), #0000 98%, #000) left / 51% 100% no-repeat,
+      radial-gradient(circle var(--notch) at 100% calc(100% - var(--tear)), #0000 98%, #000) right / 51% 100% no-repeat;
+  }
+  .stub-tear {
+    height: var(--tear);
+    background-image: linear-gradient(to right, color-mix(in srgb, var(--color-brand) 35%, transparent) 50%, transparent 0);
+    background-size: 0.6rem 1px;
+    background-repeat: repeat-x;
+    background-position: var(--notch) 0;
+    margin-inline: var(--notch);
+    padding-inline: calc(1.25rem - var(--notch));
+  }
+}

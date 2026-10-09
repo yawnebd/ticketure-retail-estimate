@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": { "lib": ["ES2020"], "types": ["google-apps-script"] },
+  "include": ["src/server", "src/shared"]
+}
