@@ -14,6 +14,7 @@ const valid = {
   products: '120',
   retail: true,
   fnb: false,
+  eventManagement: false,
 };
 
 test('parses valid input and normalises the client name', () => {
@@ -33,6 +34,12 @@ test('fractional counts and missing business type are rejected', () => {
   const r = parseEstimate({ ...valid, locations: '2.5', devicesPerLocation: '-1', retail: false });
   assert.equal(r.ok, false);
   if (!r.ok) assert.equal(r.errors.length, 3);
+});
+
+test('Event Management alone is a valid business type', () => {
+  const r = parseEstimate({ ...valid, retail: false, eventManagement: true });
+  assert.ok(r.ok);
+  assert.equal(r.data.eventManagement, true);
 });
 
 test('calculations match the sheet formulas', () => {

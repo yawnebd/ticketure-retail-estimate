@@ -22,7 +22,7 @@ test/                    unit tests for the shared logic (node:test)
 
 1. **Same submission twice** (double click, Enter pressed twice, retry after a timeout): the browser
    ignores clicks while a save is in flight, and every estimate carries a submission ID that is only
-   replaced after a successful save or Clear form. The server looks that ID up in column V under a
+   replaced after a successful save or Clear form. The server looks that ID up in column W under a
    script lock and, if it is already there, returns the existing row instead of adding another.
 2. **Same client entered again**: before appending, the server checks column D for the client name
    (ignoring case, spacing and punctuation). If a match exists, the form lists the existing rows and
@@ -53,10 +53,11 @@ from the Apps Script editor if they remain.
 Entered Date, Entered By, Status, Client Name, Locations, Devices per Location, Total Devices,
 Credit Card Fee %, Volume Basis, Est. Sales Volume (as entered), Est. Annual Sales, Est. Monthly Sales,
 Annual Card Fees, Monthly Card Fees, Annual Sales per Location, Annual Sales per Device,
-Est. Launch Date, Days to Launch, Est. Products, Retail, Food & Beverage, **Submission ID** (V).
+Est. Launch Date, Days to Launch, Est. Products, Retail, Food & Beverage, Event Management (V), **Submission ID** (W).
 
-The server writes the `Submission ID` header in V1 if it is empty. Keep column V in place; the
-duplicate check reads it.
+The server fills in the `Event Management` (V1) and `Submission ID` (W1) headers if they are empty.
+Keep column W in place; the duplicate check reads it. If an older sheet still has Submission ID in V,
+the form refuses to save and asks you to insert a column at V first.
 
 ## Scripts
 

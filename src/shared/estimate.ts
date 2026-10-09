@@ -19,6 +19,7 @@ export interface EstimateFormInput {
   products: string;
   retail: boolean;
   fnb: boolean;
+  eventManagement: boolean;
   /** Set after the user confirms they want a second estimate for an existing client. */
   allowExistingClient?: boolean;
 }
@@ -35,6 +36,7 @@ export interface EstimateData {
   products: number;
   retail: boolean;
   fnb: boolean;
+  eventManagement: boolean;
 }
 
 export interface Estimates {
@@ -90,6 +92,7 @@ export function parseEstimate(input: Partial<EstimateFormInput>): ParseResult {
   const launchDate = String(input.launchDate ?? '');
   const retail = input.retail === true;
   const fnb = input.fnb === true;
+  const eventManagement = input.eventManagement === true;
 
   const errors: string[] = [];
   if (!clientName) errors.push('Enter the client name.');
@@ -99,7 +102,7 @@ export function parseEstimate(input: Partial<EstimateFormInput>): ParseResult {
   if (!(salesVolume >= 0)) errors.push('Enter the estimated sales volume.');
   if (!DATE_RE.test(launchDate) || Number.isNaN(Date.parse(launchDate))) errors.push('Enter the estimated launch date.');
   if (!isWhole(products, 0)) errors.push('Number of products must be a whole number of 0 or more.');
-  if (!retail && !fnb) errors.push('Select Retail, Food and Beverage, or both.');
+  if (!retail && !fnb && !eventManagement) errors.push('Select at least one business type.');
   if (errors.length) return { ok: false, errors };
 
   return {
@@ -115,6 +118,7 @@ export function parseEstimate(input: Partial<EstimateFormInput>): ParseResult {
       products,
       retail,
       fnb,
+      eventManagement,
     },
   };
 }

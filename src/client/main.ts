@@ -68,6 +68,7 @@ function readForm(): EstimateFormInput {
     products: field('products').value,
     retail: field('retail').checked,
     fnb: field('fnb').checked,
+    eventManagement: field('eventManagement').checked,
   };
 }
 

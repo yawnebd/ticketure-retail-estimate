@@ -25,7 +25,8 @@ const COL = {
   enteredDate: 1, // A
   enteredBy: 2, // B
   clientName: 4, // D
-  submissionId: 22, // V
+  eventManagement: 22, // V
+  submissionId: 23, // W
 } as const;
 
 export function doGet(): GoogleAppsScript.HTML.HtmlOutput {
@@ -59,7 +60,7 @@ export function submitEstimate(input: Partial<EstimateFormInput>): SubmitResult 
   try {
     const sh = SpreadsheetApp.openById(SHEET_ID).getSheetByName(SHEET_NAME);
     if (!sh) throw new Error(`Sheet tab "${SHEET_NAME}" was not found.`);
-    ensureSubmissionIdHeader_(sh);
+    ensureHeaders_(sh);
 
     // 1) Same submission arriving twice (double click, retry, flaky network): return the original row.
     const priorRow = findSubmissionRow_(sh, input.submissionId);
@@ -98,7 +99,8 @@ export function submitEstimate(input: Partial<EstimateFormInput>): SubmitResult 
       d.products, //                              S Est. Products
       d.retail, //                                T Retail
       d.fnb, //                                   U Food & Beverage
-      input.submissionId, //                      V Submission ID
+      d.eventManagement, //                       V Event Management
+      input.submissionId, //                      W Submission ID
     ];
     sh.getRange(r, 1, 1, row.length).setValues([row]);
     SpreadsheetApp.flush();
@@ -111,9 +113,25 @@ export function submitEstimate(input: Partial<EstimateFormInput>): SubmitResult 
 // Compile-time check that the browser's view of the server API matches the real functions.
 void ({ submitEstimate } satisfies ServerApi);
 
-function ensureSubmissionIdHeader_(sh: GoogleAppsScript.Spreadsheet.Sheet): void {
-  const header = sh.getRange(1, COL.submissionId);
-  if (header.getValue() === '') header.setValue('Submission ID');
+const HEADERS: Array<[column: number, title: string]> = [
+  [COL.eventManagement, 'Event Management'],
+  [COL.submissionId, 'Submission ID'],
+];
+
+/**
+ * Fills in missing headers, and refuses to write if the sheet still has the earlier layout
+ * (Submission ID in V), so rows never land in the wrong columns.
+ */
+function ensureHeaders_(sh: GoogleAppsScript.Spreadsheet.Sheet): void {
+  const cells = sh.getRange(1, COL.eventManagement, 1, HEADERS.length);
+  const current = cells.getValues()[0].map((v) => String(v).trim());
+  if (current[0] === 'Submission ID') {
+    throw new Error('The sheet needs an Event Management column. Insert a column before Submission ID (column V) in the Submissions tab, then save again.');
+  }
+  HEADERS.forEach(([, title], i) => {
+    if (current[i] === '') current[i] = title;
+  });
+  cells.setValues([current]);
 }
 
 function findSubmissionRow_(sh: GoogleAppsScript.Spreadsheet.Sheet, id: string): number | null {
